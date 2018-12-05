@@ -17,8 +17,8 @@ app.use(bodyParser.json());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-const server_port = process.env.YOUR_PORT || process.env.PORT || 4200;
-const server_host = process.env.YOUR_HOST || '0.0.0.0';
+const server_port = process.env.PORT || process.env.PORT || 4200;
+const server_host = process.env.HOST || '0.0.0.0';
 
 const server = app.listen(server_port, server_host, function () {
   console.log(`App listening at port ${server_port}`)
