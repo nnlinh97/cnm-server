@@ -30,3 +30,16 @@ exports.create = (req, res) => {
         }
     });
 }
+
+exports.getListUsers = (req, res) => {
+    user.findAll().then((users) => {
+        res.status(200).json({
+            count: users.length,
+            users: users
+        });
+    }).catch((err) => {
+        res.status(500).json({
+            message: err
+        })
+    })
+}
