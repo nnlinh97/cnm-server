@@ -4,12 +4,15 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const db = require('./config/dbConfig');
+const startWS = require('./sockets/index');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
 const app = express();
 db.sequelize.sync();
+
+startWS();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

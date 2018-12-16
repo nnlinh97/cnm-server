@@ -1,13 +1,26 @@
 module.exports = (sequelize, DataTypes) => {
     const user = sequelize.define('USERS', {
-        email: {
+        idKey: {
             type: DataTypes.STRING,
-            validate: {
-                isEmail: true
-              }
+            primaryKey: true
         },
-        password: {
-            type: DataTypes.STRING
+        balance: {
+            type: DataTypes.BIGINT,
+            allowNull: false,
+            defaultValue: 0
+        },
+        sequence: {
+            type: DataTypes.BIGINT,
+            allowNull: false,
+            defaultValue: 0,
+        },
+        bandwidth: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+        },
+        bandwidthTime: {
+            type: DataTypes.DATE,
         }
     }, {
             charset: 'utf8',
