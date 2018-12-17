@@ -21,6 +21,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         bandwidthTime: {
             type: DataTypes.DATE,
+        },
+        avatar: {
+            type: DataTypes.TEXT,
+            allowNull: true
         }
     }, {
             charset: 'utf8',

@@ -2,6 +2,9 @@ const SHA256 = require("crypto-js/sha256");
 const db = require('../config/dbConfig');
 const user = db.user;
 
+const { RpcClient } = require('tendermint')
+
+
 exports.create = (req, res) => {
     user.findAll({
         where: {
