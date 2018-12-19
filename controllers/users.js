@@ -1,48 +1,22 @@
 const SHA256 = require("crypto-js/sha256");
-const db = require('../config/dbConfig');
-const user = db.user;
-
-const { RpcClient } = require('tendermint')
+const userRepo = require('../repos/user');
 
 
-exports.create = (req, res) => {
-    user.findAll({
-        where: {
-            email: req.body.email
-        }
-    }).then((users) => {
-        if (users.length === 0) {
-            const newUser = {
-                email: req.body.email,
-                password: SHA256(req.body.password).toString(),
-            }
-            user.create(newUser).then((user) => {
-                res.status(200).json({
-                    message: 'create user successfully',
-                    user: user
-                })
-            }).catch((err) => {
-                res.status(500).json({
-                    message: err
-                });
-            });
-        } else {
-            res.status(400).json({
-                message: "Email aready exists"
-            });
-        }
-    });
-}
-
-exports.getListUsers = (req, res) => {
-    user.findAll().then((users) => {
+exports.login = (req, res) => {
+    const idKey = req.body.publicKey;
+    userRepo.getUser(idKey).then((user) => {
         res.status(200).json({
-            count: users.length,
-            users: users
+            user: user
         });
     }).catch((err) => {
         res.status(500).json({
             message: err
         })
     })
+}
+
+exports.payment = (req, res) => {
+  res.json({
+      message: 'payment'
+  })  
 }
