@@ -1,8 +1,8 @@
 
 var db = require('../fn/db');
 
-exports.getListUsers = () => {
-    var sql = "select * from users";
+exports.getListUsers = (params) => {
+    var sql = `select * from users limit ${params.limit} offset ${params.offset}`;
     return db.load(sql);
 }
 
@@ -45,3 +45,19 @@ exports.updateBandwidth = (data) => {
                 where idKey='${data.idKey}'`;
     return db.save(sql);
 }
+
+// getListUserss = (params) => {
+//     var sql = `select * from users limit ${params.limit} offset ${params.offset}`;
+//     return db.load(sql);
+// }
+// const pr = {
+//     offset: 1,
+//     limit: 5
+// }
+//  const test = () => {
+//     getListUserss(pr).then(res => {
+//         console.log(res);
+//     })
+//  }
+
+//  test();

@@ -1,32 +1,30 @@
 var db = require('../fn/db');
 
-exports.getListPosts = () => {
-    var sql = "select * from posts";
+exports.getListPosts = (idKey) => {
+    var sql = `select * from posts where idKey='${idKey}'`;
     return db.load(sql);
 }
-// exports.updateMetaData = (data) => {
-//     console.log(data);
-//     const sql = `update meta_data set metaData='${data}' where id='meta'`;
-//     return db.save(sql);
-// }
+
+exports.getPost = (idPost) => {
+    return new Promise((resolve, reject) => {
+        var sql = `select * from posts where id = '${idPost}'`;
+        db.load(sql).then(rows => {
+            if (rows.length === 0) {
+                resolve(null);
+            } else {
+                resolve(rows[0]);
+            }
+        }).catch(err => {
+            reject(err);
+        });
+    });
+}
+
 
 exports.insertPost = (post) => {
     const sql = `insert into posts(idKey, content, createAt)
                     values('${post.idKey}', '${post.content}', '${post.createAt}')`;
     return db.save(sql);
 }
-// getListPosts = () => {
-//     var sql = "select * from posts";
-//     return db.load(sql);
-// }
 
-// const test = () => {
-//     getListPosts().then((res) => {
-//         console.log(res);
-//         res.forEach(item => {
-//             console.log(item.content);
-//             console.log('========');
-//         });
-//     })
-// }
-// test();
+

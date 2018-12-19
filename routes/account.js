@@ -1,9 +1,9 @@
 
 var express = require('express');
 var router = express.Router();
-const indexController = require('../controllers/index');
+const accountController = require('../controllers/account');
 
 //router send request to node
-router.get('/request', indexController.sendRequest);
+router.get('/get-account', accountController.getAccount);
 
 module.exports = router;
