@@ -70,8 +70,8 @@ exports.getListUsers = (req, res) => {
 }
 
 exports.getUser = (req, res) => {
-    if(req.body && req.body.idKey){
-        userRepo.getUser(req.body.idKey).then(user => {
+    if(req.query && req.query.idKey){
+        userRepo.getUser(req.query.idKey).then(user => {
             if(user){
                 res.status(200).json({
                     result: user,
@@ -89,6 +89,7 @@ exports.getUser = (req, res) => {
                 error: err
             });
         })
+
     }else {
         res.status(500).json({
             message: 'invalid params'

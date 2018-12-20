@@ -14,12 +14,20 @@ const accountRouter = require('./routes/account');
 const txRouter = require('./routes/tx');
 
 const app = express();
+var cors = require('cors');
 // db.sequelize.sync();
 
 startWS();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cors({
+  'allowedHeaders': ['sessionId', 'Content-Type'],
+  'exposedHeaders': ['sessionId'],
+  'origin': '*',
+  'methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  'preflightContinue': false
+}));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
