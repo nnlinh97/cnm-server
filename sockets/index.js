@@ -20,20 +20,20 @@ const NETWORK_BANDWIDTH = BANDWIDTH_PERIOD * SIZE_LIMITED;
 
 
 const backupData = async (result, startBlock, endBlock) => {
-    console.log('backupData');
     await asyncForEach(result, async (item, index) => {
         const txs = item.block.data.txs;
         if (index + startBlock === endBlock) {
             //current: 10511
-            console.log('updateMeta');
             let updateMeta = await metaDataRepo.updateMetaData(endBlock + 1);
+            console.log('update metadata => ', endBlock + 1);
+            console.log('-----------------------------------------------------------');
         }
         if (txs) {
-            console.log('have txs');
             const dataTx = transaction.decode(Buffer.from(txs[0], 'base64'))
             await importDB({
                 time: item.block.header.time,
                 tx: txs[0],
+                height: item.block.header.height
             })
         }
     })
@@ -46,7 +46,6 @@ async function asyncForEach(array, cb) {
 }
 
 const importDB = async (params) => {
-    console.log('importDB');
     const txSize = Buffer.from(params.tx, 'base64').length;
     const tx = transaction.decode(Buffer.from(params.tx, 'base64'));
     if (!transaction.verify(tx)) {
@@ -79,17 +78,20 @@ const importDB = async (params) => {
         idKey: account.idKey
     })
 
+    tx.createAt = params.time;
     //insert tx
     transaction.hash(tx);
-    let insertTx = await txRepo.insertTx({
+    let txItem = {
         id: tx.hash,
-        account: tx.account,
         tx: JSON.stringify(tx),
-        createAt: params.time
-    });
+        createAt: params.time,
+        height: params.height,
+        account: tx.account,
+        address: tx.params.address ? tx.params.address : ''
+    }
+    let insertTx = await txRepo.insertTx(txItem);
     switch (tx.operation) {
         case 'create_account':
-            console.log('create_account');
             const newUser = {
                 idKey: tx.params.address,
                 balance: 0,
@@ -100,9 +102,9 @@ const importDB = async (params) => {
                 avatar: ''
             }
             let insert = await userRepo.insertUser(newUser);
+            console.log(`${tx.account} create_account ${tx.params.address}`);
             break;
         case 'payment':
-            console.log('payment');
             let addressResult = await userRepo.getUser(tx.params.address);
             if (!addressResult) {
                 return "destination doesn't exists";
@@ -125,9 +127,9 @@ const importDB = async (params) => {
                 idKey: tx.params.address,
                 balance: (+addressResult.balance) + (+tx.params.amount)
             });
+            console.log(`${tx.account} payment ${tx.params.address} amount ${tx.params.amount}`);
             break;
         case 'post':
-            console.log('post');
             try {
                 decodePost(tx.params.content)
             } catch (error) {
@@ -136,56 +138,52 @@ const importDB = async (params) => {
             const content = decodePost(tx.params.content);
             if (content.text !== '' && content.type == 1) {
                 const newPost = {
+                    id: tx.hash,
                     idKey: tx.account,
                     content: content.text,
                     createAt: params.time
                 }
                 let insertPost = await postRepo.insertPost(newPost);
             }
+            console.log(`${tx.account} => post => ${content.text}`);
             break;
         case 'update_account':
             switch (tx.params.key) {
                 case 'name':
-                    console.log('name');
                     const newName = tx.params.value.toString('utf8');
-                    console.log(newName);
                     let updateNameResult = await accountRepo.getAccount(tx.account);
                     if (updateNameResult.length === 0) {
-                        console.log('insert name');
                         let insertAccount = await accountRepo.insertAccount({
                             idKey: tx.account,
                             displayName: newName,
                             avatar: ''
                         });
                     } else {
-                        console.log('update name');
                         let updateAccount = await accountRepo.updateName({
                             idKey: tx.account,
                             displayName: newName
                         });
                     }
+                    console.log(`${tx.account} => update_account key name => ${newName}`);
                     break;
                 case 'picture':
-                    console.log('update picture');
                     const avatar = 'data:image/jpeg;base64,' + tx.params.value.toString('base64');
                     let updateAvatarResult = await accountRepo.getAccount(tx.account);
                     if (updateAvatarResult.length === 0) {
-                        console.log('insert avatar');
                         let insertAvatar = await accountRepo.insertAccount({
                             idKey: tx.account,
                             displayName: '',
                             avatar: avatar
                         });
                     } else {
-                        console.log('update avatar');
                         let updateAvatar = await accountRepo.updateAvatar({
                             idKey: tx.account,
                             avatar: avatar
                         });
                     }
+                    console.log(`${tx.account} => update_account key picture => ${avatar}`);
                     break;
                 case 'followings':
-                    console.log('followings');
                     try {
                         decodeFollow(tx.params.value)
                     } catch (error) {
@@ -250,6 +248,9 @@ const importDB = async (params) => {
                             let insertFollow = await followRepo.insertFollow(newItem);
                         });
                     }
+                    console.log(`${tx.account} => update_account key followings`);
+                    console.log(`${tx.account} => newfollow => ${newFollow}`);
+                    console.log(`${tx.account} => unfollow => ${unFollow}`);
                     break;
             }
             break;
@@ -261,20 +262,16 @@ const startWS = () => {
     client.subscribe({ query: "tm.event='NewBlock'" }, listener);
 }
 
-const listeners = () => {
 
-}
 const listener = async (value) => {
     const client = RpcClient('https://dragonfly.forest.network:443');
-    console.log(+value.block.header.height);
     let meta = await metaDataRepo.getMetaData();
-    console.log(+meta[0].metaData);
     const start = +meta[0].metaData;
     let end = +value.block.header.height;
     if (end - start > 500) {
         end = start + 500;
     }
-    console.log(end);
+    console.log(`${start} => ${end}`);
     let queryBlocks = [];
     for (let i = start; i <= end; i++) {
         queryBlocks.push(client.block({ height: i }));

@@ -11,6 +11,7 @@ const usersRouter = require('./routes/users');
 const followRouter = require('./routes/follow');
 const postRouter = require('./routes/post');
 const accountRouter = require('./routes/account');
+const txRouter = require('./routes/tx');
 
 const app = express();
 // db.sequelize.sync();
@@ -25,6 +26,7 @@ app.use('/users', usersRouter);
 app.use('/follow', followRouter);
 app.use('/post', postRouter);
 app.use('/account', accountRouter);
+app.use('/transactions', txRouter);
 
 const server_port = process.env.PORT || 4200;
 

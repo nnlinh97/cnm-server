@@ -5,7 +5,6 @@ exports.getMetaData = () => {
     return db.load(sql);
 }
 exports.updateMetaData = (data) => {
-    console.log(data);
     const sql = `update meta_data set metaData='${data}' where id='meta'`;
     return db.save(sql);
 }

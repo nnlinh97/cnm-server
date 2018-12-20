@@ -22,8 +22,8 @@ exports.getPost = (idPost) => {
 
 
 exports.insertPost = (post) => {
-    const sql = `insert into posts(idKey, content, createAt)
-                    values('${post.idKey}', '${post.content}', '${post.createAt}')`;
+    const sql = `insert into posts(id, idKey, content, createAt)
+                    values('${post.id}', '${post.idKey}', '${post.content}', '${post.createAt}')`;
     return db.save(sql);
 }
 

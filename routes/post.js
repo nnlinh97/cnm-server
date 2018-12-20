@@ -7,7 +7,7 @@ router.get('/get-list-posts', postController.getListPosts);
 
 //get detail post
 router.get('/get-post', postController.getPost);
-
+router.get('/newfeed', postController.getNewfeed);
 
 
 module.exports = router;

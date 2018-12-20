@@ -54,6 +54,37 @@ exports.following = (req, res) => {
         });
     }
 }
+exports.followingID = (req, res) => {
+    if (req.body && req.body.idKey) {
+        followRepo.getListFollower(req.body.idKey).then((result) => {
+            if (result) {
+                let follows = [];
+                result.forEach(item => {
+                    follows.push(item.follower);
+                });
+                res.json({
+                    result: follows,
+                    count: follows.length,
+                    message: 'success'
+                });
+            } else {
+                res.status(200).json({
+                    result: null,
+                    message: 'not found'
+                });
+            }
+        }).catch((err) => {
+            res.status(500).json({
+                message: 'query fail',
+                error: err
+            });
+        });
+    } else {
+        res.status(500).json({
+            message: 'invalid params or not found'
+        });
+    }
+}
 
 exports.follower = (req, res) => {
     if (req.body && req.body.idKey) {
@@ -103,6 +134,38 @@ exports.follower = (req, res) => {
     } else {
         res.status(500).json({
             message: 'invalid params'
+        });
+    }
+}
+
+exports.followerID = (req, res) => {
+    if (req.body && req.body.idKey) {
+        followRepo.getListFollowings(req.body.idKey).then((result) => {
+            if (result) {
+                let follows = [];
+                result.forEach(item => {
+                    follows.push(item.following);
+                });
+                res.json({
+                    result: follows,
+                    count: follows.length,
+                    message: 'success'
+                });
+            } else {
+                res.status(200).json({
+                    result: null,
+                    message: 'not found'
+                });
+            }
+        }).catch((err) => {
+            res.status(500).json({
+                message: 'query fail',
+                error: err
+            });
+        });
+    } else {
+        res.status(500).json({
+            message: 'invalid params or not found'
         });
     }
 }

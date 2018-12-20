@@ -1,4 +1,5 @@
 const postRepo = require('../repos/post');
+const followRepo = require('../repos/follow');
 
 exports.getListPosts = (req, res) => {
     if (req.body && req.body.idKey) {
@@ -37,6 +38,56 @@ exports.getPost = (req, res) => {
                     message: 'not found'
                 });
             }
+        }).catch((err) => {
+            res.status(500).json({
+                message: 'query fail',
+                error: err
+            });
+        })
+    } else {
+        res.status(500).json({
+            message: 'invalid params'
+        });
+    }
+}
+
+exports.getNewfeed = (req, res) => {
+    if (req.body && req.body.idKey) {
+        followRepo.getListFollower(req.body.idKey).then((result) => {
+            let follow = [];
+            follow.push(req.body.idKey);
+            result.forEach(item => {
+                follow.push(item.follower);
+            });
+            let promise = [];
+            follow.forEach(item => {
+                promise.push(postRepo.getListPosts(item));
+            });
+            Promise.all(promise).then((pResult) => {
+                let follows = [];
+                pResult.forEach(item => {
+                    if (item.length) {
+                        item.forEach(element => {
+                            follows.push(element);
+                        });
+                    }
+                });
+                res.status(200).json({
+                    count: follows.length,
+                    message: 'success',
+                    result: follows
+                });
+            }).catch((err) => {
+                res.status(500).json({
+                    message: 'query fail',
+                    error: err
+                });
+            })
+        }).catch((err) => {
+            res.status(500).json({
+                message: 'query fail',
+                error: err
+            });
         })
     } else {
         res.status(500).json({
