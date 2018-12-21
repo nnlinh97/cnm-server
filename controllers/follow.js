@@ -4,8 +4,8 @@ const accountRepo = require('../repos/account');
 
 
 exports.following = (req, res) => {
-    if (req.body && req.body.idKey) {
-        followRepo.getListFollower(req.body.idKey).then((result) => {
+    if (req.query && req.query.idKey) {
+        followRepo.getListFollower(req.query.idKey).then((result) => {
             if (result.length > 0) {
                 let accounts = [];
                 let users = [];
@@ -19,7 +19,7 @@ exports.following = (req, res) => {
                             pUsers[i].displayName = pAccounts[i] ? pAccounts[i].displayName : '';
                             pUsers[i].avatar = pAccounts[i] ? pAccounts[i].avatar : '';
                         }
-                        res.json({
+                        res.status(200).json({
                             result: pUsers,
                             count: pUsers.length,
                             message: 'success'
@@ -55,8 +55,8 @@ exports.following = (req, res) => {
     }
 }
 exports.followingID = (req, res) => {
-    if (req.body && req.body.idKey) {
-        followRepo.getListFollower(req.body.idKey).then((result) => {
+    if (req.query && req.query.idKey) {
+        followRepo.getListFollower(req.query.idKey).then((result) => {
             if (result) {
                 let follows = [];
                 result.forEach(item => {
@@ -87,8 +87,8 @@ exports.followingID = (req, res) => {
 }
 
 exports.follower = (req, res) => {
-    if (req.body && req.body.idKey) {
-        followRepo.getListFollowings(req.body.idKey).then((result) => {
+    if (req.query && req.query.idKey) {
+        followRepo.getListFollowings(req.query.idKey).then((result) => {
             if (result) {
                 let accounts = [];
                 let users = [];
@@ -139,8 +139,8 @@ exports.follower = (req, res) => {
 }
 
 exports.followerID = (req, res) => {
-    if (req.body && req.body.idKey) {
-        followRepo.getListFollowings(req.body.idKey).then((result) => {
+    if (req.query && req.query.idKey) {
+        followRepo.getListFollowings(req.query.idKey).then((result) => {
             if (result) {
                 let follows = [];
                 result.forEach(item => {

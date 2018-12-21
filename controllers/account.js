@@ -1,8 +1,8 @@
 const accountRepo = require('../repos/account');
 
 exports.getAccount = (req, res) => {
-    if(req.body && req.body.idKey){
-        accountRepo.getAccountV1(req.body.idKey).then(account => {
+    if(req.query && req.query.idKey){
+        accountRepo.getAccountV1(req.query.idKey).then(account => {
             if(account){
                 res.status(200).json({
                     result: account,

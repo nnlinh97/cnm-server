@@ -2,8 +2,8 @@ const postRepo = require('../repos/post');
 const followRepo = require('../repos/follow');
 
 exports.getListPosts = (req, res) => {
-    if (req.body && req.body.idKey) {
-        postRepo.getListPosts(req.body.idKey).then((posts) => {
+    if (req.query && req.query.idKey) {
+        postRepo.getListPosts(req.query.idKey).then((posts) => {
             if (posts) {
                 res.status(200).json({
                     result: posts,
@@ -25,8 +25,8 @@ exports.getListPosts = (req, res) => {
 }
 
 exports.getPost = (req, res) => {
-    if (req.body && req.body.idPost) {
-        postRepo.getPost(req.body.idPost).then((post) => {
+    if (req.query && req.query.idPost) {
+        postRepo.getPost(req.query.idPost).then((post) => {
             if (post) {
                 res.status(200).json({
                     result: post,
@@ -52,10 +52,10 @@ exports.getPost = (req, res) => {
 }
 
 exports.getNewfeed = (req, res) => {
-    if (req.body && req.body.idKey) {
-        followRepo.getListFollower(req.body.idKey).then((result) => {
+    if (req.query && req.query.idKey) {
+        followRepo.getListFollower(req.query.idKey).then((result) => {
             let follow = [];
-            follow.push(req.body.idKey);
+            follow.push(req.query.idKey);
             result.forEach(item => {
                 follow.push(item.follower);
             });
