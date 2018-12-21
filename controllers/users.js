@@ -73,26 +73,29 @@ exports.getUser = (req, res) => {
     if(req.query && req.query.idKey){
         userRepo.getUser(req.query.idKey).then(user => {
             if(user){
-                res.status(200).json({
+                res.json({
+                    status: 200,
                     result: user,
                     message: 'success'
                 })
             } else {
-                res.status(200).json({
+                res.json({
+                    status: 500,
                     message: 'not found',
-                    result: null
                 });
             }
         }).catch((err) => {
-            res.status(500).json({
+            res.json({
+                status: 500,
                 message: 'query fail',
                 error: err
             });
         })
 
     }else {
-        res.status(500).json({
-            message: 'invalid params'
+        res.json({
+            status: 500,
+            message: 'invalid params',
         });
     }
 }
