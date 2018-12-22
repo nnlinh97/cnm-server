@@ -48,10 +48,10 @@ exports.getPost = (req, res) => {
 }
 
 exports.getNewfeed = (req, res) => {
-    if (req.body && req.body.idKey) {
-        followRepo.getListFollower(req.body.idKey).then((result) => {
+    if (req.query && req.query.idKey) {
+        followRepo.getListFollower(req.query.idKey).then((result) => {
             let follow = [];
-            follow.push(req.body.idKey);
+            follow.push(req.query.idKey);
             result.forEach(item => {
                 follow.push(item.follower);
             });
