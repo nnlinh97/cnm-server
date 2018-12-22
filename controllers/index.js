@@ -4,14 +4,13 @@ const { RpcClient } = require('tendermint');
 exports.sendRequest = (req, res) => {
     if (req.body && req.body.tx) {
         const client = RpcClient('https://komodo.forest.network:443');
-        client.broadcastTxCommit({ tx: req.body.tx }).then((res) => {
-            console.log(res);
-            if (+res.height !== 0) {
+        client.broadcastTxCommit({ tx: req.body.tx }).then((result) => {
+            if (+result.height !== 0) {
                 res.status(200).json({
                     message: 'success'
                 })
             } else {
-                res.status(500).json({
+                res.status(200).json({
                     message: 'fail'
                 });
             }

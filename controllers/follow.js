@@ -4,8 +4,8 @@ const accountRepo = require('../repos/account');
 
 
 exports.following = (req, res) => {
-    if (req.body && req.body.idKey) {
-        followRepo.getListFollower(req.body.idKey).then((result) => {
+    if (req.query && req.query.idKey) {
+        followRepo.getListFollower(req.query.idKey).then((result) => {
             if (result.length > 0) {
                 let accounts = [];
                 let users = [];
@@ -20,43 +20,31 @@ exports.following = (req, res) => {
                             pUsers[i].avatar = pAccounts[i] ? pAccounts[i].avatar : '';
                         }
                         res.json({
+                            status: 200,
                             result: pUsers,
                             count: pUsers.length,
                             message: 'success'
                         });
-                    }).catch(err => {
-                        res.status(500).json({
-                            message: 'query fail',
-                            error: err
-                        });
-                    });
-                }).catch((err) => {
-                    res.status(500).json({
-                        message: 'query fail',
-                        error: err
-                    });
-                });
+                    })
+                })
             } else {
-                res.status(200).json({
+                res.json({
+                    status: 500,
                     result: null,
                     message: 'not found'
                 });
             }
-        }).catch((err) => {
-            res.status(500).json({
-                message: 'query fail',
-                error: err
-            });
-        });
+        })
     } else {
-        res.status(500).json({
+        res.json({
+            status: 500,
             message: 'invalid params or not found'
         });
     }
 }
 exports.followingID = (req, res) => {
-    if (req.body && req.body.idKey) {
-        followRepo.getListFollower(req.body.idKey).then((result) => {
+    if (req.query && req.query.idKey) {
+        followRepo.getListFollower(req.query.idKey).then((result) => {
             if (result) {
                 let follows = [];
                 result.forEach(item => {
@@ -87,8 +75,8 @@ exports.followingID = (req, res) => {
 }
 
 exports.follower = (req, res) => {
-    if (req.body && req.body.idKey) {
-        followRepo.getListFollowings(req.body.idKey).then((result) => {
+    if (req.query && req.query.idKey) {
+        followRepo.getListFollowings(req.query.idKey).then((result) => {
             if (result) {
                 let accounts = [];
                 let users = [];
@@ -103,44 +91,32 @@ exports.follower = (req, res) => {
                             pUsers[i].avatar = pAccounts[i] ? pAccounts[i].avatar : '';
                         }
                         res.json({
+                            status: 200,
                             result: pUsers,
                             count: pUsers.length,
                             message: 'success'
                         });
-                    }).catch(err => {
-                        res.status(500).json({
-                            message: 'query fail',
-                            error: err
-                        });
-                    });
-                }).catch((err) => {
-                    res.status(500).json({
-                        message: 'query fail',
-                        error: err
-                    });
-                });
+                    })
+                })
             } else {
-                res.status(200).json({
+                res.json({
+                    status: 500,
                     result: null,
                     message: 'not found'
                 });
             }
-        }).catch((err) => {
-            res.status(500).json({
-                message: 'query fail',
-                error: err
-            });
-        });
+        })
     } else {
-        res.status(500).json({
+        res.json({
+            status: 500,
             message: 'invalid params'
         });
     }
 }
 
 exports.followerID = (req, res) => {
-    if (req.body && req.body.idKey) {
-        followRepo.getListFollowings(req.body.idKey).then((result) => {
+    if (req.query && req.query.idKey) {
+        followRepo.getListFollowings(req.query.idKey).then((result) => {
             if (result) {
                 let follows = [];
                 result.forEach(item => {

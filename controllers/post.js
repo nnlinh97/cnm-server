@@ -2,8 +2,8 @@ const postRepo = require('../repos/post');
 const followRepo = require('../repos/follow');
 
 exports.getListPosts = (req, res) => {
-    if (req.body && req.body.idKey) {
-        postRepo.getListPosts(req.body.idKey).then((posts) => {
+    if (req.query && req.query.idKey) {
+        postRepo.getListPosts(req.query.idKey).then((posts) => {
             if (posts) {
                 res.status(200).json({
                     result: posts,
@@ -25,8 +25,8 @@ exports.getListPosts = (req, res) => {
 }
 
 exports.getPost = (req, res) => {
-    if (req.body && req.body.idPost) {
-        postRepo.getPost(req.body.idPost).then((post) => {
+    if (req.query && req.query.idPost) {
+        postRepo.getPost(req.query.idPost).then((post) => {
             if (post) {
                 res.status(200).json({
                     result: post,
@@ -38,15 +38,11 @@ exports.getPost = (req, res) => {
                     message: 'not found'
                 });
             }
-        }).catch((err) => {
-            res.status(500).json({
-                message: 'query fail',
-                error: err
-            });
         })
     } else {
-        res.status(500).json({
-            message: 'invalid params'
+        res.status(200).json({
+            message: 'invalid params',
+            result: null
         });
     }
 }

@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+var cors = require('cors');
 // const db = require('./config/dbConfig');
 const startWS = require('./sockets/index');
 
@@ -14,7 +15,6 @@ const accountRouter = require('./routes/account');
 const txRouter = require('./routes/tx');
 
 const app = express();
-var cors = require('cors');
 // db.sequelize.sync();
 
 startWS();
@@ -22,11 +22,11 @@ startWS();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors({
-  'allowedHeaders': ['sessionId', 'Content-Type'],
-  'exposedHeaders': ['sessionId'],
-  'origin': '*',
-  'methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  'preflightContinue': false
+  credentials: true,
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'OPTION'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204
 }));
 
 app.use('/', indexRouter);

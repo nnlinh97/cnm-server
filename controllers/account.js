@@ -1,27 +1,24 @@
 const accountRepo = require('../repos/account');
 
 exports.getAccount = (req, res) => {
-    if(req.body && req.body.idKey){
-        accountRepo.getAccountV1(req.body.idKey).then(account => {
+    if(req.query && req.query.idKey){
+        accountRepo.getAccountV1(req.query.idKey).then(account => {
             if(account){
-                res.status(200).json({
+                res.json({
+                    status: 200,
                     result: account,
                     message: 'success'
                 })
             } else {
-                res.status(200).json({
-                    message: 'not found',
-                    result: null
+                res.json({
+                    status: 500,
+                    message: 'not found'
                 });
             }
-        }).catch((err) => {
-            res.status(500).json({
-                message: 'query fail',
-                error: err
-            });
         })
     }else {
-        res.status(500).json({
+        res.json({
+            status: 500,
             message: 'invalid params'
         });
     }

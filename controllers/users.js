@@ -1,5 +1,6 @@
 const SHA256 = require("crypto-js/sha256");
 const userRepo = require('../repos/user');
+const accountRepo = require('../repos/account');
 const axios = require('axios');
 
 
@@ -90,6 +91,42 @@ exports.getUser = (req, res) => {
                 message: 'query fail',
                 error: err
             });
+        })
+
+    }else {
+        res.json({
+            status: 500,
+            message: 'invalid params',
+        });
+    }
+}
+
+exports.getInfo = (req, res) => {
+    if(req.query && req.query.idKey){
+       let pUser =  userRepo.getUser(req.query.idKey);
+       let pAccount = accountRepo.getAccountV1(req.query.idKey);
+        Promise.all([pUser, pAccount]).then(([user, account]) => {
+            if(user || account){
+                res.json({
+                    status: 200,
+                    message: 'success',
+                    result: {
+                        idKey: user.idKey,
+                        balance: user.balance,
+                        sequence: user.sequence,
+                        bandwidth: user.bandwidth,
+                        bandwidthTime: user.bandwidthTime,
+                        bandwidthLimit: user.bandwidthLimit,
+                        displayName: account ? account.displayName : '',
+                        avatar: account ? account.avatar : ''
+                    }
+                });
+            } else {
+                res.json({
+                    status: 500,
+                    message: 'fail'
+                });
+            }
         })
 
     }else {
