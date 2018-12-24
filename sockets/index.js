@@ -7,11 +7,13 @@ const nodeUrl = require('../constants/urls').nodeUrl;
 const metaDataRepo = require('../repos/metaData');
 const userRepo = require('../repos/user');
 const accountRepo = require('../repos/account');
+const reactionRepo = require('../repos/reaction');
+const commentRepo = require('../repos/comment');
 const txRepo = require('../repos/transaction');
 const transaction = require('../lib/tx/index');
 const postRepo = require('../repos/post');
 const followRepo = require('../repos/follow');
-const { decodePost, decodeFollow } = require('../lib/tx/v1');
+const { decodePost, decodeFollow, decodeType, decodeReact } = require('../lib/tx/v1');
 const SIZE_LIMITED = 22020096;
 const BANDWIDTH_PERIOD = 86400;
 const MAX_CELLULOSE = 9007199254740991;
@@ -78,11 +80,10 @@ const importDB = async (params) => {
         idKey: account.idKey
     })
 
-    tx.createAt = params.time;
     //insert tx
     transaction.hash(tx);
     let txItem = {
-        id: tx.hash,
+        hash: tx.hash,
         tx: JSON.stringify(tx),
         createAt: params.time,
         height: params.height,
@@ -251,6 +252,53 @@ const importDB = async (params) => {
                     console.log(`${tx.account} => update_account key followings`);
                     console.log(`${tx.account} => newfollow => ${newFollow}`);
                     console.log(`${tx.account} => unfollow => ${unFollow}`);
+                    break;
+            }
+            break;
+        case 'interact':
+            //17500
+            let client = RpcClient('https://dragonfly.forest.network:443');
+            let type = decodeType(tx.params.content).type;
+            let hash = await client.tx({ hash: '0x' + tx.params.object });
+            let dataInteract = Buffer.from(hash.tx, 'base64');
+            dataInteract = transaction.decode(dataInteract);
+            switch (type) {
+                case 1:
+                    //comment
+                    // console.log(tx);
+                    // console.log(decodePost(tx.params.content).text);
+                    let insertComment = await commentRepo.insertComment({
+                        hash: tx.params.object,
+                        account: tx.account,
+                        text: decodePost(tx.params.content).text,
+                        createAt: params.time
+                    });
+                    console.log(`${tx.account} interact key comment ${tx.params.object} text ${decodePost(tx.params.content).text}`);
+                    break;
+                case 2:
+                    const accountReaction = tx.account;
+                    const hashTx = tx.params.object;
+                    let reaction = decodeReact(tx.params.content).reaction;
+                    let check = await reactionRepo.getReaction({
+                        hash: tx.params.object,
+                        account: tx.account
+                    });
+                    if (check) {
+                        //update
+                        let updateReaction = await reactionRepo.updateReaction({
+                            hash: tx.params.object,
+                            account: tx.account,
+                            type: decodeReact(tx.params.content).reaction
+                        });
+                    } else {
+                        //insert
+                        let insertReaction = await reactionRepo.insertReaction({
+                            hash: tx.params.object,
+                            account: tx.account,
+                            type: decodeReact(tx.params.content).reaction
+                        });
+                    }
+                    console.log(`${tx.account} interact key reaction ${tx.params.object} type ${decodeReact(tx.params.content).reaction}`);
                     break;
             }
             break;

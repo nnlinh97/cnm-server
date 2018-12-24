@@ -9,7 +9,7 @@ exports.getListTxs = (req, res) => {
                     item.tx = JSON.parse(item.tx);
                 });
                 res.json({
-                    status: 500,
+                    status: 200,
                     result: txs,
                     count: txs.length,
                     message: 'success'

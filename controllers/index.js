@@ -5,6 +5,7 @@ exports.sendRequest = (req, res) => {
     if (req.body && req.body.tx) {
         const client = RpcClient('https://komodo.forest.network:443');
         client.broadcastTxCommit({ tx: req.body.tx }).then((result) => {
+            console.log(result);
             if (+result.height !== 0) {
                 res.status(200).json({
                     message: 'success'
@@ -14,7 +15,11 @@ exports.sendRequest = (req, res) => {
                     message: 'fail'
                 });
             }
-        });
+        }).catch(err => {
+            res.status(414).json({
+                message: 'so large!'
+            })
+        })
         // axios.get(`https://komodo.forest.network/broadcast_tx_commit?tx=${req.body.tx}`).then(res => {
         //     console.log(res.data.result);
         //     if(res.data.result.height != 0){

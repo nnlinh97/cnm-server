@@ -51,24 +51,22 @@ exports.followingID = (req, res) => {
                     follows.push(item.follower);
                 });
                 res.json({
+                    status: 200,
                     result: follows,
                     count: follows.length,
                     message: 'success'
                 });
             } else {
-                res.status(200).json({
+                res.json({
+                    status: 500,
                     result: null,
                     message: 'not found'
                 });
             }
-        }).catch((err) => {
-            res.status(500).json({
-                message: 'query fail',
-                error: err
-            });
-        });
+        })
     } else {
-        res.status(500).json({
+        res.json({
+            status: 500,
             message: 'invalid params or not found'
         });
     }

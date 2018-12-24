@@ -1,7 +1,7 @@
 var db = require('../fn/db');
 
 exports.getListPosts = (idKey) => {
-    var sql = `select * from posts where idKey='${idKey}'`;
+    var sql = `select * from posts where idKey='${idKey}' order by createAt DESC`;
     return db.load(sql);
 }
 
