@@ -13,6 +13,8 @@ const followRouter = require('./routes/follow');
 const postRouter = require('./routes/post');
 const accountRouter = require('./routes/account');
 const txRouter = require('./routes/tx');
+const reactRouter = require('./routes/reaction');
+const commentRouter = require('./routes/comment');
 
 const app = express();
 // db.sequelize.sync();
@@ -35,6 +37,8 @@ app.use('/follow', followRouter);
 app.use('/post', postRouter);
 app.use('/account', accountRouter);
 app.use('/transactions', txRouter);
+app.use('/reactions', reactRouter);
+app.use('/comments', commentRouter);
 
 const server_port = process.env.PORT || 4200;
 

@@ -9,6 +9,11 @@ exports.insertComment = (params) => {
     return db.save(sql);
 }
 
+exports.getCommentByHash = (hash) => {
+    var sql = `select * from comments where hash='${hash}' order by createAt DESC`;
+    return db.load(sql);
+}
+
 
 // exports.getComment = (params) => {
 //     return new Promise((resolve, reject) => {

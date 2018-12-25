@@ -1,24 +1,24 @@
 var db = require('../fn/db');
 
-exports.getListPosts = (idKey) => {
-    var sql = `select * from posts where idKey='${idKey}' order by createAt DESC`;
-    return db.load(sql);
-}
+// exports.getListPosts = (idKey) => {
+//     var sql = `select * from posts where idKey='${idKey}' order by createAt DESC`;
+//     return db.load(sql);
+// }
 
-exports.getPost = (idPost) => {
-    return new Promise((resolve, reject) => {
-        var sql = `select * from posts where id = '${idPost}'`;
-        db.load(sql).then(rows => {
-            if (rows.length === 0) {
-                resolve(null);
-            } else {
-                resolve(rows[0]);
-            }
-        }).catch(err => {
-            reject(err);
-        });
-    });
-}
+// exports.getPost = (idPost) => {
+//     return new Promise((resolve, reject) => {
+//         var sql = `select * from posts where id = '${idPost}'`;
+//         db.load(sql).then(rows => {
+//             if (rows.length === 0) {
+//                 resolve(null);
+//             } else {
+//                 resolve(rows[0]);
+//             }
+//         }).catch(err => {
+//             reject(err);
+//         });
+//     });
+// }
 
 
 exports.updateReaction = (params) => {
@@ -46,4 +46,9 @@ exports.getReaction = (params) => {
             reject(err);
         });
     });
+}
+
+exports.getReactionByHash = (hash) => {
+    var sql = `select * from reactions where hash='${hash}'`;
+    return db.load(sql);
 }

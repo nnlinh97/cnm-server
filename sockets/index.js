@@ -90,7 +90,7 @@ const importDB = async (params) => {
         account: tx.account,
         address: tx.params.address ? tx.params.address : ''
     }
-    let insertTx = await txRepo.insertTx(txItem);
+    // let insertTx = await txRepo.insertTx(txItem);
     switch (tx.operation) {
         case 'create_account':
             const newUser = {
@@ -103,6 +103,24 @@ const importDB = async (params) => {
                 avatar: ''
             }
             let insert = await userRepo.insertUser(newUser);
+            // let txItem = {
+            //     account: tx.account,
+            //     address: tx.params.address,
+            //     operation: 'create_account',
+            //     createAt: params.time,
+            //     hash: tx.hash,
+            //     tx: JOSN.stringify(tx),
+            //     height: params.height
+            // }
+            txItem.operation = 'create_account';
+            txItem.content = null;
+            txItem.followed = null;
+            txItem.amount = null;
+            txItem.key = null;
+            txItem.displayName = null;
+            txItem.picture = null;
+            let insertTx1 = await txRepo.insertTx(txItem);
+
             console.log(`${tx.account} create_account ${tx.params.address}`);
             break;
         case 'payment':
@@ -128,6 +146,15 @@ const importDB = async (params) => {
                 idKey: tx.params.address,
                 balance: (+addressResult.balance) + (+tx.params.amount)
             });
+            txItem.operation = 'payment';
+            txItem.amount = tx.params.amount;
+            txItem.content = null;
+            txItem.followed = null;
+            txItem.key = null;
+            txItem.displayName = null;
+            txItem.picture = null;
+            let insertTx2 = await txRepo.insertTx(txItem);
+
             console.log(`${tx.account} payment ${tx.params.address} amount ${tx.params.amount}`);
             break;
         case 'post':
@@ -145,10 +172,20 @@ const importDB = async (params) => {
                     createAt: params.time
                 }
                 let insertPost = await postRepo.insertPost(newPost);
+                txItem.operation = 'post';
+                txItem.content = content.text;
+                txItem.followed = null;
+                txItem.amount = null;
+                txItem.key = null;
+                txItem.displayName = null;
+                txItem.picture = null;
+                let insertTx3 = await txRepo.insertTx(txItem);
+
             }
             console.log(`${tx.account} => post => ${content.text}`);
             break;
         case 'update_account':
+            txItem.operation = 'update_account';
             switch (tx.params.key) {
                 case 'name':
                     const newName = tx.params.value.toString('utf8');
@@ -165,6 +202,14 @@ const importDB = async (params) => {
                             displayName: newName
                         });
                     }
+                    txItem.key = 'name';
+                    txItem.displayName = newName;
+                    txItem.content = null;
+                    txItem.followed = null;
+                    txItem.amount = null;
+                    txItem.picture = null;
+                    let insertTx4 = await txRepo.insertTx(txItem);
+
                     console.log(`${tx.account} => update_account key name => ${newName}`);
                     break;
                 case 'picture':
@@ -182,6 +227,14 @@ const importDB = async (params) => {
                             avatar: avatar
                         });
                     }
+                    txItem.key = 'picture';
+                    txItem.picture = avatar;
+                    txItem.content = null;
+                    txItem.followed = null;
+                    txItem.amount = null;
+                    txItem.displayName = null;
+                    let insertTx = await txRepo.insertTx(txItem);
+
                     console.log(`${tx.account} => update_account key picture => ${avatar}`);
                     break;
                 case 'followings':
@@ -196,7 +249,7 @@ const importDB = async (params) => {
                     addressBlock.forEach(item => {
                         followerBlock.push(base32.encode(item));
                     });
-                    // console.log('followerBlock',followerBlock);
+                    console.log('followerBlock',followerBlock);
                     // console.log('==================================');
 
 
@@ -207,7 +260,7 @@ const importDB = async (params) => {
                             followerDB.push(item.follower);
                         });
                     }
-                    // console.log('followerDB', followerDB);
+                    console.log('followerDB', followerDB);
                     // console.log('==================================');
 
                     let unFollow = [];
@@ -224,6 +277,12 @@ const importDB = async (params) => {
                                 return unItem !== itemBlock;
                             })
                         })
+                    }
+                    if(followerBlock.length == 0){
+                        unFollow = followerDB;
+                    }
+                    if(followerDB.length == 0){
+                        newFollow = followerBlock;
                     }
                     // console.log('unFollow', unFollow);
                     // console.log('=============================');
@@ -249,6 +308,14 @@ const importDB = async (params) => {
                             let insertFollow = await followRepo.insertFollow(newItem);
                         });
                     }
+                    txItem.key = 'followings';
+                    txItem.followed = followerBlock.toString();
+                    txItem.content = null;
+                    txItem.amount = null;
+                    txItem.displayName = null;
+                    txItem.picture = null;
+                    let insertTx5 = await txRepo.insertTx(txItem);
+
                     console.log(`${tx.account} => update_account key followings`);
                     console.log(`${tx.account} => newfollow => ${newFollow}`);
                     console.log(`${tx.account} => unfollow => ${unFollow}`);
