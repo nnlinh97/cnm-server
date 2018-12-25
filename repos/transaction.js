@@ -30,3 +30,19 @@ exports.getListTxs = (idKey) => {
     var sql = `select * from transactions where account='${idKey}' or address='${idKey}' order by createAt DESC`;
     return db.load(sql);
 }
+
+exports.getTx = (hash) => {
+    return new Promise((resolve, reject) => {
+        var sql = `select * from transactions where hash = '${hash}'`;
+        db.load(sql).then(rows => {
+            if (rows.length === 0) {
+                resolve(null);
+            } else {
+                resolve(rows[0]);
+            }
+        }).catch(err => {
+            reject(err);
+        });
+    });
+}
+

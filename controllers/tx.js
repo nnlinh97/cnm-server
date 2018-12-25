@@ -29,3 +29,28 @@ exports.getListTxs = (req, res) => {
         });
     }
 }
+
+exports.getTx = (req, res) => {
+    if (req.query && req.query.hash) {
+        txRepo.getTx(req.query.hash).then((tx) => {
+            if (tx) {
+                res.json({
+                    status: 200,
+                    result: tx,
+                    message: 'success'
+                });
+            } else {
+                res.json({
+                    status: 500,
+                    result: null,
+                    message: 'not found'
+                });
+            }
+        })
+    } else {
+        res.json({
+            status: 500,
+            message: 'invalid params'
+        });
+    }
+}
