@@ -132,7 +132,7 @@ const importDB = async (params) => {
                 return "Amount must be greater than zero";
             }
             if (tx.account == tx.params.address) {
-                return "Can not transfer to the same account";
+                return "Can not transfer to myself";
             }
             if (tx.params.amount > account.balance) {
                 return "Balance must be greater or equal than Amount";
