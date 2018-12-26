@@ -37,9 +37,8 @@ exports.requestImage = (req, res) => {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         }
-        axios.post('https://dragonfly.forest.network/broadcast_tx_commit', querystring.stringify({ tx: body.tx }), contentType).then((res) => {
-            console.log(res.data.result);
-            if (+res.data.result.height !== 0) {
+        axios.post('https://dragonfly.forest.network/broadcast_tx_commit', querystring.stringify({ tx: body.tx }), contentType).then((response) => {
+            if (+response.data.result.height !== 0) {
                 res.status(200).json({
                     message: 'success'
                 })

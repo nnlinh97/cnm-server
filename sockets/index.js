@@ -250,7 +250,7 @@ const importDB = async (params) => {
                     addressBlock.forEach(item => {
                         followerBlock.push(base32.encode(item));
                     });
-                    console.log('followerBlock',followerBlock);
+                    // console.log('followerBlock',followerBlock);
                     // console.log('==================================');
 
 
@@ -261,7 +261,7 @@ const importDB = async (params) => {
                             followerDB.push(item.follower);
                         });
                     }
-                    console.log('followerDB', followerDB);
+                    // console.log('followerDB', followerDB);
                     // console.log('==================================');
 
                     let unFollow = [];
