@@ -31,11 +31,13 @@ const backupData = async (result, startBlock, endBlock) => {
             console.log('-----------------------------------------------------------');
         }
         if (txs) {
-            const dataTx = transaction.decode(Buffer.from(txs[0], 'base64'))
-            await importDB({
-                time: item.block.header.time,
-                tx: txs[0],
-                height: item.block.header.height
+            await asyncForEach(txs, async (block) => {
+                // let dataTx = transaction.decode(Buffer.from(block, 'base64'));
+                await importDB({
+                    time: item.block.header.time,
+                    tx: block,
+                    height: item.block.header.height
+                });
             })
         }
     })
@@ -124,7 +126,9 @@ const importDB = async (params) => {
             console.log(`${tx.account} create_account ${tx.params.address}`);
             break;
         case 'payment':
+            // console.log(tx);
             let addressResult = await userRepo.getUser(tx.params.address);
+            // console.log('addressResult',addressResult);
             if (!addressResult) {
                 return "destination doesn't exists";
             }
@@ -134,17 +138,18 @@ const importDB = async (params) => {
             if (tx.account == tx.params.address) {
                 return "Can not transfer to myself";
             }
-            if (tx.params.amount > account.balance) {
+            if (tx.params.amount > (+account.balance)) {
                 return "Balance must be greater or equal than Amount";
             }
             const accountResult = await userRepo.getUser(tx.account);
+            // console.log('accountResult',accountResult);
             const updateAccount = await userRepo.updateBalance({
                 idKey: tx.account,
-                balance: (+accountResult.balance) - (+tx.params.amount)
+                balance: (+accountResult.balance) - tx.params.amount
             });
             const updateAddress = await userRepo.updateBalance({
                 idKey: tx.params.address,
-                balance: (+addressResult.balance) + (+tx.params.amount)
+                balance: (+addressResult.balance) + tx.params.amount
             });
             txItem.operation = 'payment';
             txItem.amount = tx.params.amount;
@@ -279,10 +284,10 @@ const importDB = async (params) => {
                             })
                         })
                     }
-                    if(followerBlock.length == 0){
+                    if (followerBlock.length == 0) {
                         unFollow = followerDB;
                     }
-                    if(followerDB.length == 0){
+                    if (followerDB.length == 0) {
                         newFollow = followerBlock;
                     }
                     // console.log('unFollow', unFollow);
@@ -338,7 +343,7 @@ const importDB = async (params) => {
                     let insertComment = await commentRepo.insertComment({
                         hash: tx.params.object,
                         account: tx.account,
-                        text: decodePost(tx.params.content).text,
+                        text: tx.params.content.toString('base64'),
                         createAt: params.time
                     });
                     console.log(`${tx.account} interact key comment ${tx.params.object} text ${decodePost(tx.params.content).text}`);
