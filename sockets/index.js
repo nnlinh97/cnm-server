@@ -163,17 +163,18 @@ const importDB = async (params) => {
             } catch (error) {
                 break;
             }
+            // console.log(tx.params.content.toString('base64'));
             const content = decodePost(tx.params.content);
             if (content.text !== '' && content.type == 1) {
                 const newPost = {
                     id: tx.hash,
                     idKey: tx.account,
-                    content: content.text,
+                    content: tx.params.content.toString('base64'),
                     createAt: params.time
                 }
                 let insertPost = await postRepo.insertPost(newPost);
                 txItem.operation = 'post';
-                txItem.content = content.text;
+                txItem.content = tx.params.content.toString('base64');
                 txItem.followed = null;
                 txItem.amount = null;
                 txItem.key = null;
@@ -193,17 +194,17 @@ const importDB = async (params) => {
                     if (updateNameResult.length === 0) {
                         let insertAccount = await accountRepo.insertAccount({
                             idKey: tx.account,
-                            displayName: newName,
+                            displayName: tx.params.value.toString('base64'),
                             avatar: ''
                         });
                     } else {
                         let updateAccount = await accountRepo.updateName({
                             idKey: tx.account,
-                            displayName: newName
+                            displayName: tx.params.value.toString('base64')
                         });
                     }
                     txItem.key = 'name';
-                    txItem.displayName = newName;
+                    txItem.displayName = tx.params.value.toString('base64');
                     txItem.content = null;
                     txItem.followed = null;
                     txItem.amount = null;
